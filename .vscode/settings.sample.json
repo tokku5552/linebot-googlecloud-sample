@@ -6,5 +6,9 @@
     "source.organizeImports": "never",
     "source.fixAll.eslint": "explicit"
   },
-  "eslint.workingDirectories": ["./backend"]
+  "eslint.workingDirectories": ["./backend"],
+  "markdownlint.config": {
+    "MD033": false,
+    "MD041": false
+  }
 }
