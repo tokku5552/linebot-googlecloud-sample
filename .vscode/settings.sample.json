@@ -1,0 +1,14 @@
+{
+  "prettier.configPath": "backend/.prettierrc",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "never",
+    "source.fixAll.eslint": "explicit"
+  },
+  "eslint.workingDirectories": ["./backend"],
+  "markdownlint.config": {
+    "MD033": false,
+    "MD041": false
+  }
+}
