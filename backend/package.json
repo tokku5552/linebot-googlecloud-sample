@@ -5,16 +5,26 @@
   "main": "index.js",
   "scripts": {
     "dev": "nodemon src/index.ts",
+    "lint": "eslint --ext .js,.ts .",
+    "format:check": "prettier --check --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
+    "format:write": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "license": "ISC",
+  "license": "UNLICENSED",
   "dependencies": {
     "express": "^4.18.2"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",
     "@types/node": "^20.11.20",
+    "@typescript-eslint/eslint-plugin": "^7.1.0",
+    "@typescript-eslint/parser": "^7.1.0",
+    "eslint": "^8.57.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
     "nodemon": "^3.1.0",
+    "prettier": "^3.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.3.3"
   }
