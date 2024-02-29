@@ -11,7 +11,7 @@ import express from 'express';
 
 dotenv.config();
 
-const LISTEN_PORT = process.env.LISTEN_PORT || 3000;
+const PORT = process.env.PORT || 3000;
 const config: ClientConfig = {
   channelAccessToken: process.env.LINE_CHANNEL_ACCESS_TOKEN || '',
   channelSecret: process.env.LINE_CHANNEL_SECRET || '',
@@ -66,4 +66,4 @@ app.post('/webhook', async (req: Request, res: Response) => {
   return res.status(200);
 });
 
-app.listen(LISTEN_PORT, () => console.log(`listening on port ${LISTEN_PORT}!`));
+app.listen(PORT, () => console.log(`listening on port ${PORT}!`));

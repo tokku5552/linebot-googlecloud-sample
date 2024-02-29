@@ -5,6 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "dev": "nodemon -r dotenv/config src/index.ts dotenv_config_path=src/.env",
+    "clean": "rimraf dist",
+    "build": "yarn clean && tsc",
     "lint": "eslint --ext .js,.ts .",
     "format:check": "prettier --check --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
     "format:write": "prettier --write --ignore-path .gitignore './**/*.{js,jsx,ts,tsx,json}'",
