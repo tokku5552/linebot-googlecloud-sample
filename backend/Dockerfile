@@ -1,4 +1,4 @@
-FROM --platform=linux/arm64 node:20-bullseye AS builder
+FROM --platform=linux/amd64 node:20-bullseye AS builder
 
 WORKDIR /usr/app
 
@@ -10,7 +10,7 @@ RUN NODE_ENV=develpment yarn install
 
 RUN yarn run build
 
-FROM --platform=linux/arm64 node:20-bullseye AS production
+FROM --platform=linux/amd64 node:20-bullseye AS production
 
 WORKDIR /usr/app
 
