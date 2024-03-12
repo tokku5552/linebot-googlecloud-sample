@@ -66,7 +66,7 @@ const isInvalidSignature = (
 
 
 app.post('/webhook', async (req: Request, res: Response) => {
-  if (isInvalidSignature(req)) { return res.status(401) }
+  if (isInvalidSignature(req)) { return res.status(401).end() }
 
   const events: WebhookEvent[] = req.body.events;
   await Promise.all(
@@ -77,11 +77,11 @@ app.post('/webhook', async (req: Request, res: Response) => {
         if (err instanceof Error) {
           console.error(err);
         }
-        return res.status(500);
+        return res.status(500).end();
       }
     }),
   );
-  return res.status(200);
+  return res.status(200).end();
 });
 
 app.listen(PORT, () => console.log(`listening on port ${PORT}!`));
