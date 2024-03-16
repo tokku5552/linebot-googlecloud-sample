@@ -1,12 +1,24 @@
+include .env
+
+attach-bq-role:
+	gcloud projects add-iam-policy-binding $(PROJECT_ID) \
+		--member=serviceAccount:$(CLOUDRUN_SERVICE_ACCOUNT) \
+		--role=roles/bigquery.dataEditor
+
+create-ar-repo:
+	gcloud artifacts repositories create $(ARTIFACT_REPO) \
+		--location=$(LOCATION) \
+		--repository-format=Docker \
+		--project=$(PROJECT_ID)
+
 prd-build:
-	docker build -t linebot-googlecloud-sample .
+	gcloud builds submit --tag $(LOCATION)-docker.pkg.dev/$(PROJECT_ID)/$(ARTIFACT_REPO)/prd:latest \
+		--project=$(PROJECT_ID)
 
-prd-up:
-	make prd-build &&\
-	docker run --init -it --name lgs-prd -p 3000:3000 --env-file ./.env linebot-googlecloud-sample
-
-prd-bash:
-	docker exec -it lgs-prd bash
-
-prd-debug-bash:
-	docker run --rm -it --entrypoint='' linebot-googlecloud-sample bash
+prd-deploy:
+	gcloud run deploy $(CLOUDRUN_NAME) --port $(PORT) \
+		--image $(LOCATION)-docker.pkg.dev/$(PROJECT_ID)/$(ARTIFACT_REPO)/prd:latest \
+		--allow-unauthenticated \
+		--region=$(LOCATION) \
+		--project=$(PROJECT_ID) \
+		--set-env-vars="LINE_CHANNEL_ACCESS_TOKEN"="$(LINE_CHANNEL_ACCESS_TOKEN)","LINE_CHANNEL_SECRET"="$(LINE_CHANNEL_SECRET)"

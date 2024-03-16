@@ -19,7 +19,7 @@ const config: ClientConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || '',
 };
 
-const bqDatasetId = 'linebot_googlecloud_sample';
+const bqDatasetId = process.env.BQ_DATASET_ID || '';
 const bqTableId = 'bid_pt_day';
 
 // deprecated
