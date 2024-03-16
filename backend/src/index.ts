@@ -19,9 +19,8 @@ const config: ClientConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || '',
 };
 
-const bqDatasetId = 'linebot_sample_dataset';
+const bqDatasetId = 'linebot_googlecloud_sample';
 const bqTableId = 'bid_pt_day';
-
 
 // deprecated
 // TODO: 新しいClientに変更する
@@ -48,23 +47,34 @@ const textEventHandler = async (
     return;
   }
 
-  const { replyToken } = event;
-  const { text } = event.message;
+  const {
+    replyToken,
+    timestamp,
 
-  const rows = [
-    {
-      user_id: '1',
-      message: text,
-      timestamp_column: BigQuery.timestamp(Date.now())
-    },
-  ];
+    message: {
+      text,
+    } = {},
 
-  const res = await bqClient
-        .dataset(bqDatasetId)
-        .table(bqTableId)
-        .insert(rows);
+    source: {
+      userId,
+    } = {}
+  } = event;
 
-  console.log('res', res)
+  const row = {
+    user_id: userId,
+    message: text,
+    recieved_at: BigQuery.timestamp(new Date(timestamp)),
+  };
+
+  try {
+    await bqClient
+    .dataset(bqDatasetId)
+    .table(bqTableId)
+    .insert([row]);
+  } catch (e) {
+    console.error('[ERROR] Failed insert message into bq');
+    console.error(e);
+  }
 
   const response: TextMessage = {
     type: 'text',
