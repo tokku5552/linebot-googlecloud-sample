@@ -7,6 +7,7 @@ import {
   TextMessage,
   WebhookEvent,
 } from '@line/bot-sdk';
+import { BigQuery } from '@google-cloud/bigquery';
 import type { Express, Request, Response } from 'express';
 import express from 'express';
 
@@ -18,9 +19,15 @@ const config: ClientConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || '',
 };
 
+const bqDatasetId = 'linebot_sample_dataset';
+const bqTableId = 'bid_pt_day';
+
+
 // deprecated
 // TODO: 新しいClientに変更する
 const client = new Client(config);
+
+const bqClient = new BigQuery();
 
 const app: Express = express();
 
@@ -43,6 +50,22 @@ const textEventHandler = async (
 
   const { replyToken } = event;
   const { text } = event.message;
+
+  const rows = [
+    {
+      user_id: '1',
+      message: text,
+      timestamp_column: BigQuery.timestamp(Date.now())
+    },
+  ];
+
+  const res = await bqClient
+        .dataset(bqDatasetId)
+        .table(bqTableId)
+        .insert(rows);
+
+  console.log('res', res)
+
   const response: TextMessage = {
     type: 'text',
     text: `${text}と言われましても`,
@@ -63,7 +86,6 @@ const isInvalidSignature = (
 
   return signature !== reqLineSignature;
 }
-
 
 app.post('/webhook', async (req: Request, res: Response) => {
   if (isInvalidSignature(req)) { return res.status(401).end() }
