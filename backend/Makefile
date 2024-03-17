@@ -1,5 +1,3 @@
-include .env
-
 attach-bq-role:
 	gcloud projects add-iam-policy-binding $(PROJECT_ID) \
 		--member=serviceAccount:$(CLOUDRUN_SERVICE_ACCOUNT) \
