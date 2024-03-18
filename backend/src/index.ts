@@ -7,6 +7,7 @@ import {
   TextMessage,
   WebhookEvent,
 } from '@line/bot-sdk';
+import { BigQuery } from '@google-cloud/bigquery';
 import type { Express, Request, Response } from 'express';
 import express from 'express';
 
@@ -18,9 +19,14 @@ const config: ClientConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || '',
 };
 
+const bqDatasetId = process.env.BQ_DATASET_ID || '';
+const bqTableId = 'bid_pt_day';
+
 // deprecated
 // TODO: 新しいClientに変更する
 const client = new Client(config);
+
+const bqClient = new BigQuery();
 
 const app: Express = express();
 
@@ -41,8 +47,35 @@ const textEventHandler = async (
     return;
   }
 
-  const { replyToken } = event;
-  const { text } = event.message;
+  const {
+    replyToken,
+    timestamp,
+
+    message: {
+      text,
+    } = {},
+
+    source: {
+      userId,
+    } = {}
+  } = event;
+
+  const row = {
+    user_id: userId,
+    message: text,
+    recieved_at: BigQuery.timestamp(new Date(timestamp)),
+  };
+
+  try {
+    await bqClient
+    .dataset(bqDatasetId)
+    .table(bqTableId)
+    .insert([row]);
+  } catch (e) {
+    console.error('[ERROR] Failed insert message into bq');
+    console.error(e);
+  }
+
   const response: TextMessage = {
     type: 'text',
     text: `${text}と言われましても`,
@@ -63,7 +96,6 @@ const isInvalidSignature = (
 
   return signature !== reqLineSignature;
 }
-
 
 app.post('/webhook', async (req: Request, res: Response) => {
   if (isInvalidSignature(req)) { return res.status(401).end() }
