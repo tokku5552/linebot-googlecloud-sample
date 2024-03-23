@@ -20,7 +20,7 @@ resource "google_bigquery_dataset" "linebot_sample_dataset" {
   project                    = var.project_id
 }
 
-resource "google_bigquery_table" "text_info" {
+resource "google_bigquery_table" "message_logs" {
   dataset_id  = google_bigquery_dataset.linebot_sample_dataset.dataset_id
   project     = var.project_id
   table_id    = "message_logs"
