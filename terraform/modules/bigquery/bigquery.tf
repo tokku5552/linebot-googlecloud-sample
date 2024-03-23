@@ -23,15 +23,9 @@ resource "google_bigquery_dataset" "linebot_sample_dataset" {
 resource "google_bigquery_table" "text_info" {
   dataset_id  = google_bigquery_dataset.linebot_sample_dataset.dataset_id
   project     = var.project_id
-  table_id    = "bid_pt_day"
-  schema      = file("${path.module}/schema/text_info/text_info.json")
-  description = "text_info のテーブル"
-
-  time_partitioning {
-    type          = "DAY"
-    field         = "recieved_at"
-    expiration_ms = 94608000000
-  }
+  table_id    = "message_logs"
+  schema      = file("${path.module}/schema/message_logs.json")
+  description = "message_logs のテーブル"
 
   depends_on = [
     google_bigquery_dataset.linebot_sample_dataset
