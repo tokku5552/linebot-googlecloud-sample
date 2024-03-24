@@ -1,6 +1,6 @@
 # linebot-googlecloud-sample
 
-![構成図](docs/assets/system_configuration_diagram.png)
+![arch](docs/assets/architecture.drawio.png)
 
 ## Getting Started
 
