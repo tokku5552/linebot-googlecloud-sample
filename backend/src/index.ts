@@ -11,7 +11,6 @@ import { BigQuery } from '@google-cloud/bigquery';
 import type { Express, Request, Response } from 'express';
 import express from 'express';
 
-dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const config: ClientConfig = {
@@ -19,8 +18,8 @@ const config: ClientConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || '',
 };
 
-const bqDatasetId = process.env.BQ_DATASET_ID || '';
-const bqTableId = 'bid_pt_day';
+const bqDatasetName = process.env.BQ_DATASET_NAME || '';
+const bqTableName = process.env.BQ_TABLE_NAME || '';
 
 // deprecated
 // TODO: 新しいClientに変更する
@@ -68,8 +67,8 @@ const textEventHandler = async (
 
   try {
     await bqClient
-    .dataset(bqDatasetId)
-    .table(bqTableId)
+    .dataset(bqDatasetName)
+    .table(bqTableName)
     .insert([row]);
   } catch (e) {
     console.error('[ERROR] Failed insert message into bq');
