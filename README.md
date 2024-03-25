@@ -57,7 +57,7 @@ ngrok http 3000
 
 - QR コードを LINE アプリで読み込み、友だち追加したあと、なにか発話すると返答してくる。
 
-## Deploy(WIP:現状ソースコードからのデプロイはできていない。)
+## Deploy
 
 - gcloud login
 
