@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import * as crypto from "crypto";
+import * as crypto from 'crypto';
 import {
   Client,
   ClientConfig,
@@ -19,8 +19,8 @@ const config: ClientConfig = {
   channelSecret: process.env.LINE_CHANNEL_SECRET || '',
 };
 
-const bqDatasetId = process.env.BQ_DATASET_ID || '';
-const bqTableId = 'bid_pt_day';
+const bqDatasetName = process.env.BQ_DATASET_NAME || '';
+const bqTableName = process.env.BQ_TABLE_NAME || '';
 
 // deprecated
 // TODO: 新しいClientに変更する
@@ -51,13 +51,9 @@ const textEventHandler = async (
     replyToken,
     timestamp,
 
-    message: {
-      text,
-    } = {},
+    message: { text } = {},
 
-    source: {
-      userId,
-    } = {}
+    source: { userId } = {},
   } = event;
 
   const row = {
@@ -67,10 +63,7 @@ const textEventHandler = async (
   };
 
   try {
-    await bqClient
-    .dataset(bqDatasetId)
-    .table(bqTableId)
-    .insert([row]);
+    await bqClient.dataset(bqDatasetName).table(bqTableName).insert([row]);
   } catch (e) {
     console.error('[ERROR] Failed insert message into bq');
     console.error(e);
@@ -83,22 +76,22 @@ const textEventHandler = async (
   await client.replyMessage(replyToken, response);
 };
 
-const isInvalidSignature = (
-  req: Request
-): boolean => {
-  const reqLineSignature: string = req.header("x-line-signature") ?? "";
+const isInvalidSignature = (req: Request): boolean => {
+  const reqLineSignature: string = req.header('x-line-signature') ?? '';
   const channelSecret: string = process.env.LINE_CHANNEL_SECRET || '';
   const bodyString: string = JSON.stringify(req.body);
   const signature: string = crypto
-    .createHmac("SHA256", channelSecret)
+    .createHmac('SHA256', channelSecret)
     .update(bodyString)
-    .digest("base64");
+    .digest('base64');
 
   return signature !== reqLineSignature;
-}
+};
 
 app.post('/webhook', async (req: Request, res: Response) => {
-  if (isInvalidSignature(req)) { return res.status(401).end() }
+  if (isInvalidSignature(req)) {
+    return res.status(401).end();
+  }
 
   const events: WebhookEvent[] = req.body.events;
   await Promise.all(
