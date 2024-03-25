@@ -1,15 +1,10 @@
 import * as dotenv from 'dotenv';
 import * as crypto from 'crypto';
-import {
-  Client,
-  ClientConfig,
-  MessageAPIResponseBase,
-  TextMessage,
-  WebhookEvent,
-} from '@line/bot-sdk';
+import { ClientConfig, MessageAPIResponseBase, TextMessage, WebhookEvent } from '@line/bot-sdk';
 import { BigQuery } from '@google-cloud/bigquery';
 import type { Express, Request, Response } from 'express';
 import express from 'express';
+import { MessagingApiClient, ReplyMessageRequest } from '@line/bot-sdk/dist/messaging-api/api';
 
 dotenv.config();
 
@@ -22,12 +17,8 @@ const config: ClientConfig = {
 const bqDatasetName = process.env.BQ_DATASET_NAME || '';
 const bqTableName = process.env.BQ_TABLE_NAME || '';
 
-// deprecated
-// TODO: 新しいClientに変更する
-const client = new Client(config);
-
+const client = new MessagingApiClient(config);
 const bqClient = new BigQuery();
-
 const app: Express = express();
 
 // Middleware
@@ -47,14 +38,7 @@ const textEventHandler = async (
     return;
   }
 
-  const {
-    replyToken,
-    timestamp,
-
-    message: { text } = {},
-
-    source: { userId } = {},
-  } = event;
+  const { replyToken, timestamp, message: { text } = {}, source: { userId } = {} } = event;
 
   const row = {
     user_id: userId,
@@ -73,7 +57,13 @@ const textEventHandler = async (
     type: 'text',
     text: `${text}と言われましても`,
   };
-  await client.replyMessage(replyToken, response);
+
+  const replyMessageRequest: ReplyMessageRequest = {
+    replyToken: replyToken,
+    messages: [response],
+  };
+
+  await client.replyMessage(replyMessageRequest);
 };
 
 const isInvalidSignature = (req: Request): boolean => {
