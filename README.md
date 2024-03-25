@@ -38,8 +38,8 @@ cp -pr .env.sample .env
 | LINE_CHANNEL_ACCESS_TOKEN | LINE Developers コンソールの `Messaging APIチャネル` > `Messaging API 設定` > `チャネルアクセストークン` |
 | LINE_CHANNEL_SECRET       | LINE Developers コンソールの `Messaging APIチャネル` > `チャネル基本設定` > `チャネルシークレット`       |
 | PORT                      | 3000(別になんでも良い)                                                                                   |
-| BQ_DATASET_NAME                      | linebot_googlecloud_sample(別になんでも良い)                                                                                   |
-| BQ_TABLE_NAME                      | logs(別になんでも良い)                                                                                   |
+| BQ_DATASET_NAME           | linebot_googlecloud_sample(別になんでも良い)                                                             |
+| BQ_TABLE_NAME             | logs(別になんでも良い)                                                                                   |
 
 - local server 起動
 

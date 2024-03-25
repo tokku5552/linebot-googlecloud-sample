@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-import * as crypto from "crypto";
+import * as crypto from 'crypto';
 import {
   Client,
   ClientConfig,
@@ -11,6 +11,7 @@ import { BigQuery } from '@google-cloud/bigquery';
 import type { Express, Request, Response } from 'express';
 import express from 'express';
 
+dotenv.config();
 
 const PORT = process.env.PORT || 3000;
 const config: ClientConfig = {
@@ -50,13 +51,9 @@ const textEventHandler = async (
     replyToken,
     timestamp,
 
-    message: {
-      text,
-    } = {},
+    message: { text } = {},
 
-    source: {
-      userId,
-    } = {}
+    source: { userId } = {},
   } = event;
 
   const row = {
@@ -66,10 +63,7 @@ const textEventHandler = async (
   };
 
   try {
-    await bqClient
-    .dataset(bqDatasetName)
-    .table(bqTableName)
-    .insert([row]);
+    await bqClient.dataset(bqDatasetName).table(bqTableName).insert([row]);
   } catch (e) {
     console.error('[ERROR] Failed insert message into bq');
     console.error(e);
@@ -82,22 +76,22 @@ const textEventHandler = async (
   await client.replyMessage(replyToken, response);
 };
 
-const isInvalidSignature = (
-  req: Request
-): boolean => {
-  const reqLineSignature: string = req.header("x-line-signature") ?? "";
+const isInvalidSignature = (req: Request): boolean => {
+  const reqLineSignature: string = req.header('x-line-signature') ?? '';
   const channelSecret: string = process.env.LINE_CHANNEL_SECRET || '';
   const bodyString: string = JSON.stringify(req.body);
   const signature: string = crypto
-    .createHmac("SHA256", channelSecret)
+    .createHmac('SHA256', channelSecret)
     .update(bodyString)
-    .digest("base64");
+    .digest('base64');
 
   return signature !== reqLineSignature;
-}
+};
 
 app.post('/webhook', async (req: Request, res: Response) => {
-  if (isInvalidSignature(req)) { return res.status(401).end() }
+  if (isInvalidSignature(req)) {
+    return res.status(401).end();
+  }
 
   const events: WebhookEvent[] = req.body.events;
   await Promise.all(
